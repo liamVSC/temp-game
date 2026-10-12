@@ -7,7 +7,7 @@ const css = fs.readFileSync(require.resolve("../styles.css"), "utf8");
 const game = fs.readFileSync(require.resolve("../game.js"), "utf8");
 
 test("all primary screens and overlays retain their expected UI hooks", () => {
-  for (const id of ["home-screen", "game-screen", "board", "goals", "daily-card", "achievement-list", "shop-backdrop", "modal-backdrop", "toast"]) {
+  for (const id of ["home-screen", "game-screen", "board", "goals", "daily-play", "achievement-list", "shop-backdrop", "modal-backdrop", "toast"]) {
     assert.match(html, new RegExp('id="' + id + '"'), "missing UI hook: " + id);
   }
   assert.match(html, /aria-label="Home"/);
