@@ -14,7 +14,7 @@ No build step, account, backend, or ads are required. Progress and the active pu
 - Groups of 4 create rockets, 5–8 create bombs, and 9+ create rainbow clears. One tile remains as the power-up; only tiles actually removed count toward objectives and score.
 - Tiles fall under gravity and refill from above. Newly formed groups do not pop automatically: every pop costs a move and is chosen by you.
 - From level 4, crates appear and break when you pop a neighbouring group. From level 8, ice can appear: the first adjacent pop cracks it and the next breaks it. Boosters can clear obstacles directly.
-- Level objectives scale with the move budget, and board generation keeps a legal matching group available at the start. Obstacles are placed away from existing matching groups.
+- Level objectives scale gradually and are capped so their theoretical pair-clear minimum leaves at least four moves of slack. Board generation keeps a legal matching group available at the start; obstacles are placed away from existing matching groups.
 - Clear both colour objectives before running out of moves.
 - First-time level clears award coins; every fifth distinct level cleared grants a 25-coin milestone bonus. Replays can improve best scores but do not repeatedly mint level-clear coins.
 - Any unlocked level is playable; future levels stay locked until the previous level is completed.
