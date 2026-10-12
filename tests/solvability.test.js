@@ -9,7 +9,7 @@ test("all 5,000 level configurations have valid, distinct objectives and a viabl
     assert.ok(config.targets.every(target => target.count > 0 && target.count <= 24), `level ${level} objective range`);
     assert.notEqual(config.targets[0].colour, config.targets[1].colour, `level ${level} objectives use distinct colours`);
     const minimumPairMoves = config.targets.reduce((sum, target) => sum + Math.ceil(target.count / 2), 0);
-    assert.ok(minimumPairMoves <= config.moves, `level ${level} can fit the objective counts into pair-clears within its move budget`);
+    assert.ok(minimumPairMoves <= config.moves - 4, `level ${level} keeps at least four moves of slack above the theoretical pair-clear minimum`);
   }
 });
 
