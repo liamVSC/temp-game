@@ -14,7 +14,7 @@
   <div class="app-shell">
     <header class="topbar">
       <a class="brand" id="brand" href="./" aria-label="Pop Party home"><span class="brand-mark">✦</span><span>pop<span class="brand-accent">party</span></span></a>
-      <div class="wallet" aria-label="Your coins"><span aria-hidden="true">🪙</span><strong id="coin-count">0</strong></div>
+      <button class="wallet wallet-button" id="shop-button" type="button" aria-label="Open shop. Your coins:"><span aria-hidden="true">🪙</span><strong id="coin-count">0</strong><span class="wallet-shop-label">SHOP</span></button>
       <button class="icon-button" id="settings-button" aria-label="Settings">⚙</button>
     </header>
 
@@ -54,6 +54,21 @@
     </main>
   </div>
 
+  <div class="shop-backdrop hidden" id="shop-backdrop">
+    <section class="shop-panel" role="dialog" aria-modal="true" aria-labelledby="shop-title">
+      <button class="shop-close" id="shop-close" type="button" aria-label="Close shop">×</button>
+      <p class="home-kicker">POWER UP YOUR POPS</p>
+      <h2 id="shop-title">Pop Shop <span aria-hidden="true">🛍️</span></h2>
+      <div class="shop-wallet"><span>YOUR COINS</span><strong><span aria-hidden="true">🪙</span> <span id="shop-coins">0</span></strong></div>
+      <p class="shop-intro">Spend coins on boosters. Earn more by clearing levels, completing the daily puzzle and unlocking achievements.</p>
+      <div class="shop-items">
+        <article class="shop-item"><span class="shop-item-icon rocket-icon" aria-hidden="true">🚀</span><div class="shop-item-copy"><strong>Rocket</strong><small>Turn a colour block into a row-clearing blast.</small><span class="shop-owned">Owned: <b id="shop-rocket-owned">0</b></span></div><button class="shop-buy" type="button" data-buy-booster="rocket" aria-label="Buy Rocket for 25 coins">🪙 25</button></article>
+        <article class="shop-item"><span class="shop-item-icon bomb-icon" aria-hidden="true">💣</span><div class="shop-item-copy"><strong>Bomb</strong><small>Clear a 3 × 3 area when activated.</small><span class="shop-owned">Owned: <b id="shop-bomb-owned">0</b></span></div><button class="shop-buy" type="button" data-buy-booster="bomb" aria-label="Buy Bomb for 25 coins">🪙 25</button></article>
+        <article class="shop-item"><span class="shop-item-icon shuffle-icon" aria-hidden="true">🔀</span><div class="shop-item-copy"><strong>Shuffle</strong><small>Refresh the board when you need a new plan.</small><span class="shop-owned">Owned: <b id="shop-shuffle-owned">0</b></span></div><button class="shop-buy" type="button" data-buy-booster="shuffle" aria-label="Buy Shuffle for 25 coins">🪙 25</button></article>
+      </div>
+      <p class="shop-footnote">This is an in-game coin shop. No real-money purchases are enabled.</p>
+    </section>
+  </div>
   <div class="modal-backdrop hidden" id="modal-backdrop">
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <button class="modal-close" id="modal-close" aria-label="Close">×</button>
