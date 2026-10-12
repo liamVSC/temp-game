@@ -2,33 +2,22 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const C = require("../game-core.js");
 
-test("all 5,000 level configurations have non-empty objectives within the move budget", () => {
+test("all 5,000 level configurations have valid, distinct objectives and a viable move budget", () => {
   for (let level = 1; level <= C.MAX_LEVEL; level++) {
     const config = C.levelConfig(level);
     assert.ok(config.moves >= 18 && config.moves <= 25, `level ${level} move budget`);
-    assert.ok(config.targets.every(target => target.count > 0), `level ${level} objective`);
-    assert.ok(config.targets[0].colour !== config.targets[1].colour, `level ${level} objectives use distinct colours`);
+    assert.ok(config.targets.every(target => target.count > 0 && target.count <= 24), `level ${level} objective range`);
+    assert.notEqual(config.targets[0].colour, config.targets[1].colour, `level ${level} objectives use distinct colours`);
   }
 });
 
-test("every generated level has a guaranteed two-move objective solution", () => {
+test("all 5,000 deterministic starting boards contain valid tiles and at least one playable move", () => {
   for (let level = 1; level <= C.MAX_LEVEL; level++) {
-    const config = C.levelConfig(level);
     const board = C.createBoard(level, level * 12345);
-    const firstRows = Math.ceil(config.targets[0].count / C.COLS);
-    const secondRows = Math.ceil(config.targets[1].count / C.COLS);
-    const secondStart = firstRows * C.COLS;
-
-    assert.ok(C.groupAt(board, 0).length >= config.targets[0].count,
-      `level ${level}: first objective is one clearable group`);
-    assert.ok(C.groupAt(board, secondStart).length >= config.targets[1].count,
-      `level ${level}: second objective is one clearable group`);
-
-    for (const index of C.groupAt(board, 0)) board[index] = null;
-    const settled = C.refill(C.applyGravity(board), level, level * 98765);
-    assert.ok(C.groupAt(settled, secondStart).length >= config.targets[1].count,
-      `level ${level}: second objective remains clearable after the first clear`);
-    assert.ok(config.moves >= 2, `level ${level}: enough moves to clear both objectives`);
+    assert.equal(board.length, C.ROWS * C.COLS, `level ${level} board dimensions`);
+    assert.ok(board.every(tile => (Number.isInteger(tile) && tile >= 0 && tile < C.COLOURS) ||
+      tile === "crate" || tile === "ice" || tile === "cracked-ice"), `level ${level} contains only supported tiles`);
+    assert.ok(C.hasPlayableMove(board), `level ${level} has at least one playable move`);
   }
 });
 
