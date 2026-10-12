@@ -579,3 +579,122 @@ body{
 .shop-buy:disabled{opacity:.45;filter:grayscale(.4);box-shadow:none;cursor:not-allowed}
 .shop-footnote{margin:13px 3px 0;text-align:center;font-size:9px;line-height:1.4;color:#a19ab9;font-weight:800}
 @media(max-width:380px){.shop-panel{padding:22px 12px 14px}.shop-item{gap:7px;padding:9px}.shop-item-icon{width:37px;height:37px;font-size:20px}.shop-item-copy small{font-size:9px}.shop-buy{min-width:59px;padding:9px 5px}.wallet-shop-label{display:none}}
+
+
+/* Unified UI polish: consistent surfaces, legible hierarchy, clear touch states. */
+:root{
+  --ui-ink:#f8f3ff;
+  --ui-muted:#c9bce5;
+  --ui-panel:#281748;
+  --ui-panel-raised:#34205a;
+  --ui-border:#65458d;
+  --ui-focus:#ffe477;
+}
+body{color:var(--ui-ink);background:radial-gradient(ellipse at 50% -8%,#482778 0,#21133f 52%,#17102d 100%)}
+.app-shell{max-width:560px;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+.topbar{min-height:52px;margin-bottom:4px}
+.brand{letter-spacing:-.8px}
+.wallet-button{background:linear-gradient(145deg,#fffdf8,#f4ecff);border-color:#d8c9ff;box-shadow:0 4px 0 #9b83cf,0 7px 14px #0b041f35;transition:transform .15s,filter .15s}
+.wallet-button strong{font-variant-numeric:tabular-nums}
+.icon-button{border:1px solid #a98ae8;box-shadow:0 3px 0 #32175f;cursor:pointer;transition:transform .15s,filter .15s}
+.icon-button:active,.wallet-button:active,.daily-claim:active,.shop-buy:active,.primary-button:active,.secondary-button:active{transform:translateY(2px)}
+.home-screen{gap:14px;padding-top:10px}
+.map-hero{padding:9px 4px 7px}
+.map-hero .home-title{max-width:310px;font-size:clamp(30px,8vw,42px);line-height:1.04;text-wrap:balance}
+.map-hero .home-copy{color:#d0c1ef;line-height:1.45}
+.map-mascot{border-color:#cba8ff;box-shadow:0 6px 0 #281044,0 0 26px #9c56ff3d}
+.daily-card,.achievement-card{background:linear-gradient(145deg,#302052f5,#24163ff5);border-color:#604282;box-shadow:0 4px 0 #140b27,0 10px 22px #09031d35}
+.daily-card{grid-template-columns:42px minmax(0,1fr) auto}
+.daily-copy h2{font-size:15px;line-height:1.2}
+.daily-copy>p:not(.home-kicker){line-height:1.4}
+.daily-claim{min-width:88px;padding:10px 9px;box-shadow:0 3px 0 #a76625;transition:transform .15s,filter .15s}
+.achievement-card .section-heading h2{font-size:19px}
+.achievement-item{padding:10px;background:#1e1236;border-color:#4b326c;transition:border-color .15s,background .15s}
+.achievement-text strong{font-size:12px}
+.achievement-text small{font-size:10px;line-height:1.35}
+.home-stats{color:#eee5ff}
+.home-stats span:first-child{background:#382459;border:1px solid #65458b;font-size:12px}
+.home-stats span:first-child strong{color:#ffe477;font-variant-numeric:tabular-nums}
+.home-play-button{margin-top:2px;min-height:82px;border-color:#c9adff;background:linear-gradient(110deg,#a27dff,#784ce9 58%,#5e37cf);box-shadow:0 6px 0 #351b86,0 12px 22px #08031f55}
+.home-play-button>strong{font-size:21px}
+.home-play-arrow{background:#ffffff20}
+.game-screen{padding-bottom:12px}
+.game-hud{gap:10px}
+.game-level,.moves-pill{min-width:65px;border-radius:15px}
+.moves-pill{font-variant-numeric:tabular-nums}
+.hud-progress{height:9px;border:1px solid #7252a0;border-radius:999px;overflow:hidden}
+#progress-fill{transition:width .25s ease}
+.goal-row{align-items:center;padding-top:15px;padding-bottom:13px}
+.goal-copy strong{font-size:15px;line-height:1.25}
+.goal-copy>span:last-child{line-height:1.4;color:#c8b9e4}
+.goals{gap:7px}
+.goal-chip{background:#352153;border-color:#65488a;color:#f8f2ff;box-shadow:0 2px 0 #160d2b}
+.goal-chip .goal-name{font-size:10px}
+.goal-chip .goal-count{font-variant-numeric:tabular-nums}
+.goal-chip.done{background:#174d49;border-color:#5bd5b7;color:#d9fff4}
+.board-wrap{border-radius:24px;border-color:#d6c4ff;box-shadow:0 6px 0 #3d218c,0 16px 28px #0c05263d}
+.board{gap:clamp(3px,1vw,6px);padding:clamp(5px,1.6vw,9px)}
+.tile{min-width:0;min-height:0;border-radius:clamp(7px,2vw,12px);cursor:pointer;transition:transform .12s ease,filter .12s ease,outline-color .12s ease}
+.tile:not(:disabled):hover{filter:brightness(1.07)}
+.tile:focus-visible{z-index:3;outline:3px solid var(--ui-focus);outline-offset:-3px}
+.tile.selected{outline:3px solid var(--ui-focus);outline-offset:-4px}
+.tile.empty{cursor:default}
+.board-footer{align-items:center;min-height:28px}
+#board-message{line-height:1.35}
+.powerups{gap:9px;padding-top:18px}
+.powerup{min-height:126px;justify-content:center;border-color:#cfc0f4;background:linear-gradient(180deg,#fff 0%,#f3edff 100%);box-shadow:0 4px 0 #b8a5e8,0 8px 16px #09031f28}
+.powerup:not(:disabled):hover{filter:brightness(1.035);transform:translateY(-2px)}
+.powerup:disabled{opacity:.52;filter:grayscale(.25);cursor:not-allowed}
+.powerup strong{font-size:12px}
+.powerup small{font-size:10px;min-width:32px}
+.modal-backdrop,.shop-backdrop{overscroll-behavior:contain}
+.modal-backdrop{padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
+.modal{max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+.modal h2{line-height:1.1;text-wrap:balance}
+.modal p{line-height:1.55}
+.modal-close,.shop-close{display:grid;place-items:center;min-width:40px;min-height:40px;cursor:pointer}
+.primary-button,.secondary-button{min-height:48px;transition:transform .15s,filter .15s}
+.secondary-button{border:1px solid #6b4a91}
+.setting-row{gap:14px;min-height:54px;padding:12px 2px;border-bottom:1px solid #5b407a;color:#f8f3ff}
+.setting-row:last-child{border-bottom:0}
+.setting-row input{flex:none;accent-color:#d78cff;width:23px;height:23px}
+.setting-row button{min-height:40px}
+.shop-panel{color:#332353}
+.shop-item{transition:transform .14s,border-color .14s,box-shadow .14s}
+.shop-item:focus-within{border-color:#9d7be8}
+.shop-buy{min-height:43px;cursor:pointer;transition:transform .14s,filter .14s}
+.shop-buy:not(:disabled):hover{filter:brightness(1.08);transform:translateY(-1px)}
+.shop-buy:focus-visible,.shop-close:focus-visible,.modal-close:focus-visible,.icon-button:focus-visible,.wallet-button:focus-visible,.daily-claim:focus-visible,.home-play-button:focus-visible,.powerup:focus-visible,.primary-button:focus-visible,.secondary-button:focus-visible{outline:3px solid var(--ui-focus);outline-offset:3px}
+.toast{max-width:calc(100vw - 28px);white-space:normal;text-align:center;line-height:1.35}
+button{ -webkit-user-select:none;user-select:none}
+@media(min-width:480px){
+  .app-shell{padding-left:18px;padding-right:18px}
+  .board-wrap{padding:14px 12px 11px}
+  .powerup{min-height:132px}
+}
+@media(max-width:380px){
+  .app-shell{padding-left:10px;padding-right:10px}
+  .map-hero .home-title{font-size:clamp(27px,7.8vw,32px)}
+  .map-mascot{width:62px;height:62px;border-radius:21px;font-size:37px}
+  .daily-card{grid-template-columns:34px minmax(0,1fr);gap:8px}
+  .daily-claim{grid-column:2;justify-self:start;min-width:104px;min-height:36px}
+  .daily-icon{width:34px;height:34px}
+  .achievement-item{gap:7px;padding:8px}
+  .achievement-reward{font-size:8px}
+  .home-play-button>strong{font-size:18px}
+  .goal-row{align-items:flex-start;flex-direction:column;gap:8px}
+  .goals{justify-content:flex-start;width:100%}
+  .goal-chip{padding:5px 6px}
+  .goal-chip .goal-name{font-size:9px}
+  .powerups{gap:6px}
+  .powerup{min-height:112px;padding:8px 4px}
+  .power-icon{width:45px;height:45px;font-size:26px}
+  .powerup strong{font-size:10px}
+  .shop-item-copy small{overflow-wrap:anywhere}
+}
+@media(hover:none){
+  .tile:not(:disabled):hover,.powerup:not(:disabled):hover,.shop-buy:not(:disabled):hover{transform:none;filter:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .wallet-button,.icon-button,.daily-claim,.shop-item,.shop-buy,.primary-button,.secondary-button,.tile,.powerup{transition:none!important}
+}
