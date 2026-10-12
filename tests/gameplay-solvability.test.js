@@ -93,16 +93,16 @@ function simulateAction(state, action, config, depth) {
 }
 
 function actionsFor(board) {
-  const actions = [], seen = new Set();
+  const actions = [], visited = new Set();
   for (let i = 0; i < board.length; i++) {
-    if (typeof board[i] === "number") {
+    if (typeof board[i] === "number" && !visited.has(i)) {
       const group = C.groupAt(board, i);
-      if (group.length >= 2) {
-        const key = group[0];
-        if (!seen.has(key)) { seen.add(key); actions.push({ kind: "group", index: key }); }
-      }
+      group.forEach(index => visited.add(index));
+      if (group.length >= 2) actions.push({ kind: "group", index: group[0] });
     } else if (["rocket", "bomb", "rainbow"].includes(board[i])) {
       actions.push({ kind: "power", index: i });
+    } else {
+      visited.add(i);
     }
   }
   return actions;
