@@ -2,8 +2,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const C = require("../game-core.js");
 
-const BEAM_WIDTH = 64;
-const MAX_EXPANSIONS_PER_DEPTH = 4000;
+const BEAM_WIDTH = 48;
+const MAX_EXPANSIONS_PER_DEPTH = 2500;
 
 function hashBoard(board) {
   let h = 2166136261;
@@ -88,7 +88,7 @@ function simulateAction(state, action, config, depth) {
 
   let nextBoard = settle(board, config.level, hashBoard(board), depth);
   // game.js grants a free fresh board when a settled board has no matching group or power.
-  if (actionsFor(nextBoard).length === 0) nextBoard = C.createBoard(config.level, (hashBoard(nextBoard) + depth + 1) >>> 0);
+  if (!C.hasPlayableMove(nextBoard)) nextBoard = C.createBoard(config.level, (hashBoard(nextBoard) + depth + 1) >>> 0);
   return { board: nextBoard, collected, moves: state.moves - 1, depth: depth + 1 };
 }
 
