@@ -8,6 +8,8 @@ test("all 5,000 level configurations have valid, distinct objectives and a viabl
     assert.ok(config.moves >= 18 && config.moves <= 25, `level ${level} move budget`);
     assert.ok(config.targets.every(target => target.count > 0 && target.count <= 24), `level ${level} objective range`);
     assert.notEqual(config.targets[0].colour, config.targets[1].colour, `level ${level} objectives use distinct colours`);
+    const minimumPairMoves = config.targets.reduce((sum, target) => sum + Math.ceil(target.count / 2), 0);
+    assert.ok(minimumPairMoves <= config.moves, `level ${level} can fit the objective counts into pair-clears within its move budget`);
   }
 });
 
