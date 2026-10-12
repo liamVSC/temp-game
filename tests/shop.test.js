@@ -9,7 +9,7 @@ const C = require("../game-core.js");
 
 test("home wallet opens an accessible in-game shop dialog", () => {
   assert.match(html, /id="shop-button"[^>]*aria-label="Open shop/);
-  assert.match(html, /id="shop-backdrop" class="shop-backdrop hidden"/);
+  assert.match(html, /class="shop-backdrop hidden" id="shop-backdrop"/);
   assert.match(html, /role="dialog" aria-modal="true" aria-labelledby="shop-title"/);
   assert.match(html, /id="shop-title">Pop Shop/);
   assert.match(game, /\$\("shop-button"\)\?\.addEventListener\("click",openShop\)/);
