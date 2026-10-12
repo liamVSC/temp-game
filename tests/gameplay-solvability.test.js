@@ -188,3 +188,11 @@ test("gameplay solvability audit is repeatable for the same level and seed", () 
   const a = solveLevel(20, 2020), b = solveLevel(20, 2020);
   assert.deepEqual(a, b);
 });
+
+test("stratified gameplay audit covers every 250th level through the full 5,000-level catalogue", () => {
+  for (let level = 250; level <= C.MAX_LEVEL; level += 250) {
+    const seed = (level * 12345 + 91) >>> 0;
+    const result = solveLevel(level, seed);
+    assert.equal(result.solved, true, `level ${level}, seed ${seed}: ${JSON.stringify(result)}`);
+  }
+});
