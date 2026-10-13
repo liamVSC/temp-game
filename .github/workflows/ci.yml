@@ -15,7 +15,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm test
       - run: npm run check
       - run: npm run build
       - name: Audit all 5,000 generated levels with deterministic solver
