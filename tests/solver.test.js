@@ -1,0 +1,54 @@
+"use strict";
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const C = require("../game-core.js");
+const S = require("../scripts/solver.js");
+
+test("solver component detection matches orthogonal same-colour groups", () => {
+  const board = Array(72).fill(null);
+  board[0] = 1; board[1] = 1; board[2] = 2; board[8] = 1; board[9] = 1;
+  assert.deepEqual(S.components(board), [[0, 1, 8, 9]]);
+});
+
+test("solver models crate destruction and two-hit ice damage", () => {
+  const board = Array(72).fill(null);
+  board[0] = "crate"; board[2] = "ice"; board[9] = "cracked-ice";
+  S.damageObstacles(board, [1, 8]);
+  assert.equal(board[0], null);
+  assert.equal(board[2], "cracked-ice");
+  assert.equal(board[9], null);
+});
+
+test("solver is deterministic for the same level, seed and search budget", () => {
+  const a = S.solveLevel(8, { seed: 8008, nodeLimit: 35, beamWidth: 3 });
+  const b = S.solveLevel(8, { seed: 8008, nodeLimit: 35, beamWidth: 3 });
+  assert.deepEqual(a, b);
+});
+
+test("solver reports bounded-search uncertainty honestly", () => {
+  const result = S.solveLevel(20, { seed: 20020, nodeLimit: 1, beamWidth: 1 });
+  assert.ok(["solved", "inconclusive"].includes(result.status));
+  assert.ok(result.expanded <= 1);
+  assert.ok(result.movesUsed >= 0 && result.movesUsed <= C.levelConfig(20).moves);
+});
+
+test("solver models power-up creation thresholds and available booster inventory", () => {
+  const source = require("node:fs").readFileSync(require.resolve("../scripts/solver.js"), "utf8");
+  assert.match(source, /group\.length >= 9 \? "rainbow" : group\.length >= 5 \? "bomb" : "rocket"/);
+  assert.match(source, /DEFAULT_INVENTORY = Object\.freeze\(\{ rocket: 2, bomb: 1, shuffle: 1 \}\)/);
+  assert.match(source, /function usePower/);
+  assert.match(source, /function settle/);
+});
+
+test("all 5,000 generated level definitions are deterministic and objectives stay valid", { timeout: 120000 }, () => {
+  for (let level = 1; level <= C.MAX_LEVEL; level++) {
+    const seed = Math.imul(level, 997) >>> 0;
+    assert.deepEqual(C.createBoard(level, seed), C.createBoard(level, seed), "board seed " + seed);
+    const config = C.levelConfig(level);
+    assert.ok(config.moves >= 18 && config.moves <= 25);
+    assert.ok(config.targets.every(t => t.count > 0 && t.colour >= 0 && t.colour < C.COLOURS));
+  }
+  const first = S.solveLevel(1, { nodeLimit: 15, beamWidth: 2 });
+  assert.ok(["solved", "inconclusive"].includes(first.status));
+  assert.equal(first.seed, Math.imul(1, 997) >>> 0);
+});

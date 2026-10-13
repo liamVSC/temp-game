@@ -18,6 +18,15 @@ jobs:
       - run: npm test
       - run: npm run check
       - run: npm run build
+      - name: Audit all 5,000 generated levels with deterministic solver
+        run: npm run audit:levels
+      - name: Retain level solver report and failing seeds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pop-party-level-solvability
+          path: artifacts/*.json
+          if-no-files-found: ignore
       - name: Install Playwright for mobile browser checks
         run: npm install --no-save --package-lock=false playwright@1.56.1
       - name: Install Chromium
