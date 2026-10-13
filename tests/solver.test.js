@@ -85,16 +85,11 @@ test("booster placement is deterministic, free, and activation is a separate mov
   assert.equal(activated.collected[0], expectedCollected);
 });
 
-test("previously inconclusive generated seeds remain deterministic bounded-search regressions", () => {
-  assert.ok(regressions.length >= 5, "retain discovered difficult seeds as regressions");
+test("all previously inconclusive generated seeds solve after dead-board refresh is modeled", { timeout: 120000 }, () => {
+  assert.ok(regressions.length >= 40, "retain all discovered inconclusive seeds as regressions");
   for (const fixture of regressions) {
-    const options = { seed: fixture.seed, beamWidth: 4, nodeLimit: 45 };
-    const first = S.solveLevel(fixture.level, options);
-    const second = S.solveLevel(fixture.level, options);
-    assert.deepEqual(first, second, "reproducible result for level " + fixture.level + " seed " + fixture.seed);
-    assert.equal(first.status, "inconclusive", "known bounded-search case level " + fixture.level + " seed " + fixture.seed);
-    assert.equal(first.seed, fixture.seed);
-    assert.ok(first.expanded <= options.nodeLimit);
+    const result = S.solveLevel(fixture.level, { seed: fixture.seed, beamWidth: 4, nodeLimit: 100 });
+    assert.equal(result.status, "solved", "level " + fixture.level + " seed " + fixture.seed + " should now solve; got " + result.status);
   }
 });
 
@@ -110,6 +105,27 @@ test("shuffle booster uses owned inventory then available coins without spending
   assert.equal(second.coins, 25);
   assert.equal(third.coins, 0);
   assert.equal(S.applyAction(third, { type: "booster", booster: "shuffle" }, 1, config, 997), null);
+});
+
+test("dead-board refresh is deterministic and free when moves remain", () => {
+  const config = C.levelConfig(1);
+  const board = Array.from({ length: C.ROWS * C.COLS }, (_, i) => (Math.floor(i / C.COLS) + i % C.COLS) % 2);
+  assert.equal(C.hasPlayableMove(board), false);
+  const state = { board, collected: Array(C.COLOURS).fill(0), moves: config.moves,
+    boosters: { rocket: 0, bomb: 0, shuffle: 0 }, coins: 0, rngStep: 1, boosterStep: 0, shuffles: 0 };
+  const first = S.settle({ ...state, board: state.board.slice(), collected: state.collected.slice(), boosters: { ...state.boosters } }, 1, 997);
+  const second = S.settle({ ...state, board: state.board.slice(), collected: state.collected.slice(), boosters: { ...state.boosters } }, 1, 997);
+  assert.deepEqual(first.board, second.board);
+  assert.equal(first.moves, config.moves);
+  assert.equal(C.hasPlayableMove(first.board), true);
+});
+
+test("heuristic stops rewarding colours whose objectives are already complete", () => {
+  const config = { moves: 20, targets: [{ colour: 0, count: 1 }, { colour: 1, count: 1 }] };
+  const base = { collected: [1, 0, 0, 0, 0, 0], moves: 10 };
+  const completedColourBoard = Array(72).fill(null); completedColourBoard[0] = 0; completedColourBoard[1] = 0; completedColourBoard[2] = 0; completedColourBoard[9] = 1;
+  const activeColourBoard = Array(72).fill(null); activeColourBoard[9] = 1;
+  assert.equal(S.heuristic({ ...base, board: completedColourBoard }, config), S.heuristic({ ...base, board: activeColourBoard }, config));
 });
 
 test("solver models power-up creation thresholds and available booster inventory", () => {

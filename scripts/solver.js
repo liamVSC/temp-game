@@ -46,6 +46,13 @@ function settle(state, level, seedBase) {
   const seed = (seedBase + Math.imul(state.rngStep, GOLDEN)) >>> 0;
   state.rngStep++;
   state.board = C.refill(C.applyGravity(state.board), level, seed);
+  // The live game refreshes a dead board for free after a settled move,
+  // unless the player has already won or run out of moves.
+  if (state.moves > 0 && !objectivesComplete(state, C.levelConfig(level)) && !C.hasPlayableMove(state.board)) {
+    const freshSeed = (seedBase + Math.imul(state.rngStep, GOLDEN)) >>> 0;
+    state.rngStep++;
+    state.board = C.createBoard(level, freshSeed);
+  }
   return state;
 }
 function usePower(state, index, level, seedBase) {
@@ -97,7 +104,7 @@ function remaining(state, config) {
 function heuristic(state, config) {
   const left = remaining(state, config);
   if (!left) return -100000;
-  const targetColours = new Set(config.targets.map(t => t.colour));
+  const targetColours = new Set(config.targets.filter(t => state.collected[t.colour] < t.count).map(t => t.colour));
   let targetOnBoard = 0, adjacentTargetPairs = 0, obstacleCount = 0, powerCount = 0;
   for (let at = 0; at < state.board.length; at++) {
     const value = state.board[at];
@@ -168,7 +175,7 @@ function solveLevel(level, options = {}) {
   const initial = { board: C.createBoard(level, seed), collected: Array(C.COLOURS).fill(0),
     moves: config.moves, boosters: { ...DEFAULT_INVENTORY, ...(options.boosters || {}) },
     coins: options.coins === undefined ? 50 : Math.max(0, options.coins), rngStep: 1, boosterStep: 0, shuffles: 0 };
-  let beam = [initial], expanded = 0, deepest = 0;
+  let beam = [initial], expanded = 0, deepest = 0, bestRemaining = remaining(initial, config);
   const seen = new Set([signature(initial)]);
   while (beam.length && expanded < nodeLimit) {
     const next = [];
@@ -178,6 +185,7 @@ function solveLevel(level, options = {}) {
       for (const action of actionsFor(state, config)) {
         const child = applyAction(state, action, level, config, seed);
         if (!child || child.moves < 0) continue;
+        bestRemaining = Math.min(bestRemaining, remaining(child, config));
         if (objectivesComplete(child, config)) return { status: "solved", level, seed, movesUsed: config.moves - child.moves, expanded, remaining: 0 };
         const key = signature(child);
         if (seen.has(key)) continue;
@@ -193,7 +201,7 @@ function solveLevel(level, options = {}) {
   }
   // Beam pruning means a failed bounded search is never a proof of impossibility.
   return { status: "inconclusive", level, seed, movesUsed: deepest, expanded,
-    remaining: beam.length ? Math.min(...beam.map(s => remaining(s, config))) : remaining(initial, config),
+    remaining: beam.length ? Math.min(...beam.map(s => remaining(s, config))) : bestRemaining,
     reason: expanded >= nodeLimit ? "node-limit" : "beam-exhausted", deepest };
 }
 function auditLevels(options = {}) {
@@ -206,4 +214,4 @@ function auditLevels(options = {}) {
   }
   return { version: 1, levels: C.MAX_LEVEL, counts, failures: results.filter(r => r.status !== "solved"), results };
 }
-module.exports = { components, damageObstacles, objectivesComplete, remaining, heuristic, applyAction, solveLevel, auditLevels };
+module.exports = { components, damageObstacles, objectivesComplete, remaining, heuristic, settle, applyAction, solveLevel, auditLevels };

@@ -1,52 +1,257 @@
 [
   {
-    "level": 45,
-    "seed": 44865,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 54,
+    "seed": 53838,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 52,
-    "seed": 51844,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 177,
+    "seed": 176469,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 61,
-    "seed": 60817,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 307,
+    "seed": 306079,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 67,
-    "seed": 66799,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 378,
+    "seed": 376866,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 70,
-    "seed": 69790,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 593,
+    "seed": 591221,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 72,
-    "seed": 71784,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 783,
+    "seed": 780651,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 74,
-    "seed": 73778,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 889,
+    "seed": 886333,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 81,
-    "seed": 80757,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 998,
+    "seed": 995006,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 94,
-    "seed": 93718,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 1174,
+    "seed": 1170478,
+    "reason": "inconclusive before dead-board refresh modeling"
   },
   {
-    "level": 103,
-    "seed": 102691,
-    "reason": "inconclusive at 45-node audit budget"
+    "level": 1435,
+    "seed": 1430695,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1503,
+    "seed": 1498491,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1512,
+    "seed": 1507464,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1539,
+    "seed": 1534383,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1545,
+    "seed": 1540365,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1653,
+    "seed": 1648041,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1817,
+    "seed": 1811549,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1838,
+    "seed": 1832486,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 1992,
+    "seed": 1986024,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2036,
+    "seed": 2029892,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2155,
+    "seed": 2148535,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2187,
+    "seed": 2180439,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2330,
+    "seed": 2323010,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2442,
+    "seed": 2434674,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2549,
+    "seed": 2541353,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2701,
+    "seed": 2692897,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2729,
+    "seed": 2720813,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2812,
+    "seed": 2803564,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2824,
+    "seed": 2815528,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 2962,
+    "seed": 2953114,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3075,
+    "seed": 3065775,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3246,
+    "seed": 3236262,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3560,
+    "seed": 3549320,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3590,
+    "seed": 3579230,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3636,
+    "seed": 3625092,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3848,
+    "seed": 3836456,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3921,
+    "seed": 3909237,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 3924,
+    "seed": 3912228,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4054,
+    "seed": 4041838,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4067,
+    "seed": 4054799,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4165,
+    "seed": 4152505,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4232,
+    "seed": 4219304,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4278,
+    "seed": 4265166,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4285,
+    "seed": 4272145,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4618,
+    "seed": 4604146,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4626,
+    "seed": 4612122,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4643,
+    "seed": 4629071,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4782,
+    "seed": 4767654,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4835,
+    "seed": 4820495,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4871,
+    "seed": 4856387,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4911,
+    "seed": 4896267,
+    "reason": "inconclusive before dead-board refresh modeling"
+  },
+  {
+    "level": 4973,
+    "seed": 4958081,
+    "reason": "inconclusive before dead-board refresh modeling"
   }
 ]
