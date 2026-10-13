@@ -20,6 +20,29 @@ test("solver models crate destruction and two-hit ice damage", () => {
   assert.equal(board[9], null);
 });
 
+test("solver group enumeration exactly matches production groupAt across generated boards", () => {
+  for (let level = 1; level <= 100; level++) {
+    const board = C.createBoard(level, Math.imul(level, 997) >>> 0);
+    const expected = [];
+    for (let index = 0; index < board.length; index++) {
+      const group = C.groupAt(board, index);
+      if (group.length >= 2 && group[0] === index) expected.push(group);
+    }
+    assert.deepEqual(S.components(board), expected, "group parity at generated level " + level);
+  }
+});
+
+test("shared obstacle damage handles simultaneous hits without double-damaging ice", () => {
+  const board = Array(72).fill(null);
+  board[0] = 0; board[1] = 0; board[2] = "crate";
+  board[8] = "ice"; board[9] = "ice"; board[10] = "cracked-ice";
+  C.damageObstacles(board, [0, 1, 9]);
+  assert.equal(board[2], null, "crate adjacent to cleared tiles breaks");
+  assert.equal(board[8], "cracked-ice", "ice hit by two cleared tiles cracks only once");
+  assert.equal(board[10], null, "cracked ice breaks when hit");
+  assert.equal(board[9], "ice", "the explicitly cleared index is left for the caller to clear");
+});
+
 test("solver is deterministic for the same level, seed and search budget", () => {
   const a = S.solveLevel(8, { seed: 8008, nodeLimit: 35, beamWidth: 3 });
   const b = S.solveLevel(8, { seed: 8008, nodeLimit: 35, beamWidth: 3 });
