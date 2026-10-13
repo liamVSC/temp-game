@@ -152,7 +152,7 @@ function bestBoosterCandidates(state, config) {
     }
     if (best !== null) choices.push({ type: "bomb", index: best });
   }
-  if ((state.boosters.shuffle > 0 || state.coins >= 25) && state.shuffles < 1) choices.push({ type: "shuffle" });
+  if (state.boosters.shuffle > 0 || state.coins >= 25) choices.push({ type: "shuffle" });
   return choices;
 }
 function applyAction(source, action, level, config, seedBase) {

@@ -81,6 +81,20 @@ test("previously inconclusive generated seeds solve with a deeper deterministic 
   }
 });
 
+test("shuffle booster uses owned inventory then available coins without spending moves", () => {
+  const config = C.levelConfig(1);
+  const initial = { board: C.createBoard(1, 997), collected: Array(C.COLOURS).fill(0), moves: config.moves,
+    boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
+  const first = S.applyAction(initial, { type: "booster", booster: "shuffle" }, 1, config, 997);
+  const second = S.applyAction(first, { type: "booster", booster: "shuffle" }, 1, config, 997);
+  const third = S.applyAction(second, { type: "booster", booster: "shuffle" }, 1, config, 997);
+  assert.equal(first.moves, config.moves);
+  assert.equal(first.boosters.shuffle, 0);
+  assert.equal(second.coins, 25);
+  assert.equal(third.coins, 0);
+  assert.equal(S.applyAction(third, { type: "booster", booster: "shuffle" }, 1, config, 997), null);
+});
+
 test("solver models power-up creation thresholds and available booster inventory", () => {
   const source = require("node:fs").readFileSync(require.resolve("../scripts/solver.js"), "utf8");
   assert.match(source, /group\.length >= 9 \? "rainbow" : group\.length >= 5 \? "bomb" : "rocket"/);
