@@ -97,21 +97,18 @@ function heuristic(state, config) {
   const left = remaining(state, config);
   if (!left) return -100000;
   const targetColours = new Set(config.targets.map(t => t.colour));
-  const groups = components(state.board);
-  let targetInGroups = 0, bestTargetGroup = 0, bestGroup = 0, obstacleCount = 0, powerCount = 0;
-  for (const group of groups) {
-    let targetTiles = 0;
-    for (const at of group) if (targetColours.has(state.board[at])) targetTiles++;
-    targetInGroups += targetTiles;
-    bestTargetGroup = Math.max(bestTargetGroup, targetTiles);
-    bestGroup = Math.max(bestGroup, group.length);
-  }
-  for (const value of state.board) {
+  let targetOnBoard = 0, adjacentTargetPairs = 0, obstacleCount = 0, powerCount = 0;
+  for (let at = 0; at < state.board.length; at++) {
+    const value = state.board[at];
+    if (targetColours.has(value)) {
+      targetOnBoard++;
+      for (const next of C.neighbours(at)) if (next > at && state.board[next] === value) adjacentTargetPairs++;
+    }
     if (OBSTACLES.has(value)) obstacleCount++;
     if (POWERS.has(value)) powerCount++;
   }
   const movesUsed = config.moves - state.moves;
-  return left * 100 + movesUsed * 2 - targetInGroups * 2 - bestTargetGroup * 3 - bestGroup - powerCount * 5 + obstacleCount * .1;
+  return left * 100 + movesUsed * 2 - targetOnBoard * 2 - adjacentTargetPairs * 1.5 - powerCount * 5 + obstacleCount * .1;
 }
 function signature(state) {
   return state.board.join(",") + "|" + state.collected.join(",") + "|" + state.moves + "|" +
@@ -234,4 +231,4 @@ function auditLevels(options = {}) {
   }
   return { version: 1, levels: C.MAX_LEVEL, counts, failures: results.filter(r => r.status !== "solved"), results };
 }
-module.exports = { components, damageObstacles, objectivesComplete, remaining, heuristic, solveLevel, auditLevels };
+module.exports = { components, damageObstacles, objectivesComplete, remaining, heuristic, applyAction, solveLevel, auditLevels };
