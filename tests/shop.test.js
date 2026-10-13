@@ -31,7 +31,8 @@ test("shop offers all supported boosters at a consistent 25-coin price", () => {
 test("booster purchases check the balance and update saved inventory exactly once", () => {
   assert.match(game, /function buyShopBooster\(type\)/);
   assert.match(game, /if\(!\["rocket","bomb","shuffle"\]\.includes\(type\)\)return/);
-  assert.match(game, /if\(\(progress\.coins\|\|0\)<25\)\{toast\("You need 25 coins for a booster\."\);return;\}progress\.coins-=25;progress\.boosters\[type\]=\(progress\.boosters\[type\]\|\|0\)\+1;save\(\)/);
+  assert.match(game, /const purchase=C\.purchaseBooster\(progress,type,25\)/);
+  assert.match(game, /purchase\.reason==="funds"/);
   assert.match(game, /button\.disabled=\(progress\.coins\|\|0\)<25/);
   assert.match(game, /function renderShop\(\)/);
 });
@@ -55,4 +56,31 @@ test("shop layout remains scrollable and usable on narrow mobile screens", () =>
   assert.match(css, /@media\(max-width:380px\)\{\.shop-panel/);
   assert.match(css, /\.shop-buy:disabled/);
   assert.match(css, /button:focus-visible/);
+});
+
+test("booster purchase transaction rejects invalid types and prevents rapid double-spend", () => {
+  const progress = C.newProgress();
+  assert.equal(C.purchaseBooster(progress, "invalid", 25).ok, false);
+  assert.equal(C.purchaseBooster(progress, "rocket", 25).ok, true);
+  assert.equal(C.purchaseBooster(progress, "rocket", 25).ok, true);
+  assert.equal(progress.coins, 0);
+  assert.equal(progress.boosters.rocket, 4);
+  assert.equal(C.purchaseBooster(progress, "rocket", 25).reason, "funds");
+  assert.equal(progress.coins, 0);
+  assert.equal(progress.boosters.rocket, 4);
+});
+test("booster placement changes one colour tile without activation or inventory mutation", () => {
+  const board = Array(C.ROWS * C.COLS).fill(0);
+  board[0] = "crate";
+  const placed = C.placeBooster(board, "rocket", 0.5);
+  assert.ok(placed);
+  assert.equal(placed.board.filter(tile => tile === "rocket").length, 1);
+  assert.equal(placed.board[0], "crate");
+  assert.equal(board.filter(tile => tile === 0).length, C.ROWS * C.COLS - 1);
+  assert.equal(C.placeBooster(Array(C.ROWS * C.COLS).fill("crate"), "bomb"), null);
+  assert.equal(C.placeBooster(board, "shuffle"), null);
+});
+test("game guards terminal results against duplicate win and loss handling", () => {
+  assert.match(game, /function winLevel\(\)\{if\(busy\|\|runFinished\)return;runFinished=true/);
+  assert.match(game, /function loseLevel\(\)\{if\(busy\|\|runFinished\)return;runFinished=true/);
 });
