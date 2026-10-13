@@ -61,18 +61,21 @@ test("rocket activation clears one row, damages adjacent obstacles and does not 
   assert.ok(next.board.every(tile => tile !== null));
 });
 
-test("placing a bomb is free, replaces one colour tile, and activation is a separate move", () => {
+test("booster placement is deterministic, free, and activation is a separate move", () => {
   const config = C.levelConfig(1);
   const board = Array(72).fill(0);
   const state = { board, collected: Array(C.COLOURS).fill(0), moves: config.moves,
-    boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
-  const placed = S.applyAction(state, { type: "booster", booster: "bomb", index: 36 }, 1, config, 997);
+    boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, boosterStep: 0, shuffles: 0 };
+  const placed = S.applyAction(state, { type: "booster", booster: "bomb" }, 1, config, 997);
+  const repeated = S.applyAction(state, { type: "booster", booster: "bomb" }, 1, config, 997);
+  assert.deepEqual(placed.board, repeated.board);
   assert.equal(placed.moves, config.moves);
   assert.equal(placed.boosters.bomb, 0);
-  assert.equal(placed.board[36], "bomb");
+  assert.equal(placed.board.filter(tile => tile === "bomb").length, 1);
   assert.equal(placed.collected[0], 0, "placing a booster does not collect the replaced colour");
-  assert.equal(state.board[36], 0, "the input state remains immutable");
-  const activated = S.applyAction(placed, { type: "power", index: 36 }, 1, config, 997);
+  assert.equal(state.board.filter(tile => tile === 0).length, 72, "the input state remains immutable");
+  const index = placed.board.indexOf("bomb");
+  const activated = S.applyAction(placed, { type: "power", index }, 1, config, 997);
   assert.equal(activated.moves, config.moves - 1);
   assert.equal(activated.collected[0], 8);
 });
@@ -109,7 +112,7 @@ test("solver models power-up creation thresholds and available booster inventory
   assert.match(source, /group\.length >= 9 \? "rainbow" : group\.length >= 5 \? "bomb" : "rocket"/);
   assert.match(source, /DEFAULT_INVENTORY = Object\.freeze\(\{ rocket: 2, bomb: 1, shuffle: 1 \}\)/);
   assert.match(source, /function usePower/);
-  assert.match(source, /Placement is a free setup action/);
+  assert.match(source, /The live game randomly replaces a colour tile/);
   assert.match(source, /function settle/);
 });
 

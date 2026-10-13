@@ -7,7 +7,8 @@ const POWERS = new Set(["rocket", "bomb", "rainbow"]);
 
 function cloneState(state) {
   return { board: state.board.slice(), collected: state.collected.slice(), moves: state.moves,
-    boosters: { ...state.boosters }, coins: state.coins, rngStep: state.rngStep, shuffles: state.shuffles || 0 };
+    boosters: { ...state.boosters }, coins: state.coins, rngStep: state.rngStep,
+    boosterStep: state.boosterStep || 0, shuffles: state.shuffles || 0 };
 }
 function components(board) {
   const seen = new Uint8Array(board.length), groups = [];
@@ -112,46 +113,14 @@ function heuristic(state, config) {
 }
 function signature(state) {
   return state.board.join(",") + "|" + state.collected.join(",") + "|" + state.moves + "|" +
-    state.boosters.rocket + "," + state.boosters.bomb + "," + state.boosters.shuffle + "|" + state.coins + "|" + state.rngStep;
+    state.boosters.rocket + "," + state.boosters.bomb + "," + state.boosters.shuffle + "|" + state.coins + "|" + state.rngStep + "|" + (state.boosterStep || 0);
 }
-function bestBoosterCandidates(state, config) {
-  const board = state.board;
-  const targetColours = new Set(config.targets.filter(t => state.collected[t.colour] < t.count).map(t => t.colour));
+function bestBoosterCandidates(state) {
+  const hasColourTile = state.board.some(value => Number.isInteger(value) && value >= 0 && value < C.COLOURS);
+  if (!hasColourTile) return [];
   const choices = [];
-  if (state.boosters.rocket > 0 || state.coins >= 25) {
-    let best = null, bestValue = -Infinity;
-    for (let row = 0; row < C.ROWS; row++) {
-      let value = 0;
-      for (let x = 0; x < C.COLS; x++) {
-        const tile = board[row * C.COLS + x];
-        if (targetColours.has(tile)) value += 2;
-        else if (OBSTACLES.has(tile)) value += tile === "ice" ? 1 : .5;
-      }
-      if (value > bestValue) {
-        const candidates = Array.from({ length: C.COLS }, (_, x) => row * C.COLS + x)
-          .filter(at => Number.isInteger(board[at]) && board[at] >= 0 && board[at] < C.COLOURS)
-          .sort((a, b) => Math.abs((a % C.COLS) - (C.COLS / 2)) - Math.abs((b % C.COLS) - (C.COLS / 2)));
-        if (candidates.length) { bestValue = value; best = candidates[0]; }
-      }
-    }
-    if (best !== null) choices.push({ type: "rocket", index: best });
-  }
-  if (state.boosters.bomb > 0 || state.coins >= 25) {
-    let best = null, bestValue = -Infinity;
-    for (let at = 0; at < board.length; at++) {
-      if (!Number.isInteger(board[at]) || board[at] < 0 || board[at] >= C.COLOURS) continue;
-      const cx = at % C.COLS, cy = Math.floor(at / C.COLS);
-      let value = 0;
-      for (let y = Math.max(0, cy - 1); y <= Math.min(C.ROWS - 1, cy + 1); y++)
-        for (let x = Math.max(0, cx - 1); x <= Math.min(C.COLS - 1, cx + 1); x++) {
-          const tile = board[y * C.COLS + x];
-          if (targetColours.has(tile)) value += 2;
-          else if (OBSTACLES.has(tile)) value += tile === "ice" ? 1 : .5;
-        }
-      if (value > bestValue) { bestValue = value; best = at; }
-    }
-    if (best !== null) choices.push({ type: "bomb", index: best });
-  }
+  if (state.boosters.rocket > 0 || state.coins >= 25) choices.push({ type: "rocket" });
+  if (state.boosters.bomb > 0 || state.coins >= 25) choices.push({ type: "bomb" });
   if (state.boosters.shuffle > 0 || state.coins >= 25) choices.push({ type: "shuffle" });
   return choices;
 }
@@ -171,11 +140,13 @@ function applyAction(source, action, level, config, seedBase) {
       state.board = C.createBoard(level, seed);
       return state;
     }
-    // Placement is a free setup action in the real game. Activation is a
-    // separate tap and consumes a move, so leave the power on the board.
-    if (!Number.isInteger(action.index) || action.index < 0 || action.index >= state.board.length) return null;
-    if (!Number.isInteger(state.board[action.index]) || state.board[action.index] < 0 || state.board[action.index] >= C.COLOURS) return null;
-    state.board[action.index] = type;
+    // The live game randomly replaces a colour tile. Use a separate seeded
+    // stream so placement is reproducible but not strategically chosen by the solver.
+    const placementSeed = (seedBase ^ Math.imul((state.boosterStep || 0) + 1, GOLDEN)) >>> 0;
+    state.boosterStep = (state.boosterStep || 0) + 1;
+    const placement = C.placeBooster(state.board, type, C.rng(placementSeed)());
+    if (!placement) return null;
+    state.board = placement.board;
     return state;
   }
   return null;
@@ -183,9 +154,9 @@ function applyAction(source, action, level, config, seedBase) {
 function actionsFor(state, config) {
   const actions = components(state.board).map(group => ({ type: "group", group }));
   state.board.forEach((tile, index) => { if (POWERS.has(tile)) actions.push({ type: "power", index }); });
-  for (const booster of bestBoosterCandidates(state, config)) {
+  for (const booster of bestBoosterCandidates(state)) {
     if (booster.type === "shuffle") actions.push({ type: "booster", booster: "shuffle" });
-    else actions.push({ type: "booster", booster: booster.type, index: booster.index });
+    else actions.push({ type: "booster", booster: booster.type });
   }
   return actions;
 }
@@ -196,7 +167,7 @@ function solveLevel(level, options = {}) {
   const nodeLimit = Math.max(1, options.nodeLimit || 45);
   const initial = { board: C.createBoard(level, seed), collected: Array(C.COLOURS).fill(0),
     moves: config.moves, boosters: { ...DEFAULT_INVENTORY, ...(options.boosters || {}) },
-    coins: options.coins === undefined ? 50 : Math.max(0, options.coins), rngStep: 1, shuffles: 0 };
+    coins: options.coins === undefined ? 50 : Math.max(0, options.coins), rngStep: 1, boosterStep: 0, shuffles: 0 };
   let beam = [initial], expanded = 0, deepest = 0;
   const seen = new Set([signature(initial)]);
   while (beam.length && expanded < nodeLimit) {
