@@ -171,8 +171,12 @@ function applyAction(source, action, level, config, seedBase) {
       state.board = C.createBoard(level, seed);
       return state;
     }
+    // Placement is a free setup action in the real game. Activation is a
+    // separate tap and consumes a move, so leave the power on the board.
+    if (!Number.isInteger(action.index) || action.index < 0 || action.index >= state.board.length) return null;
+    if (!Number.isInteger(state.board[action.index]) || state.board[action.index] < 0 || state.board[action.index] >= C.COLOURS) return null;
     state.board[action.index] = type;
-    return usePower(state, action.index, level, seedBase);
+    return state;
   }
   return null;
 }

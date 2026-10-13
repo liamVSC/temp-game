@@ -61,16 +61,20 @@ test("rocket activation clears one row, damages adjacent obstacles and does not 
   assert.ok(next.board.every(tile => tile !== null));
 });
 
-test("placing and activating a bomb consumes inventory, not the replaced colour objective", () => {
+test("placing a bomb is free, replaces one colour tile, and activation is a separate move", () => {
   const config = C.levelConfig(1);
   const board = Array(72).fill(0);
   const state = { board, collected: Array(C.COLOURS).fill(0), moves: config.moves,
     boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
-  const next = S.applyAction(state, { type: "booster", booster: "bomb", index: 36 }, 1, config, 997);
-  assert.equal(next.moves, config.moves - 1);
-  assert.equal(next.boosters.bomb, 0);
-  assert.equal(next.collected[0], 8);
-  assert.equal(state.collected[0], 0, "the input state remains immutable");
+  const placed = S.applyAction(state, { type: "booster", booster: "bomb", index: 36 }, 1, config, 997);
+  assert.equal(placed.moves, config.moves);
+  assert.equal(placed.boosters.bomb, 0);
+  assert.equal(placed.board[36], "bomb");
+  assert.equal(placed.collected[0], 0, "placing a booster does not collect the replaced colour");
+  assert.equal(state.board[36], 0, "the input state remains immutable");
+  const activated = S.applyAction(placed, { type: "power", index: 36 }, 1, config, 997);
+  assert.equal(activated.moves, config.moves - 1);
+  assert.equal(activated.collected[0], 8);
 });
 
 test("previously inconclusive generated seeds solve with a deeper deterministic search", { timeout: 120000 }, () => {
@@ -99,7 +103,7 @@ test("solver models power-up creation thresholds and available booster inventory
   const source = require("node:fs").readFileSync(require.resolve("../scripts/solver.js"), "utf8");
   assert.match(source, /group\.length >= 9 \? "rainbow" : group\.length >= 5 \? "bomb" : "rocket"/);
   assert.match(source, /DEFAULT_INVENTORY = Object\.freeze\(\{ rocket: 2, bomb: 1, shuffle: 1 \}\)/);
-  assert.match(source, /function usePower/);
+  assert.match(source, /function usePower/);\n  assert.match(source, /Placement is a free setup action/);
   assert.match(source, /function settle/);
 });
 
