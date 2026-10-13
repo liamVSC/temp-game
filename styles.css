@@ -800,3 +800,22 @@ button:focus-visible,a:focus-visible,.tile:focus-visible{
 @media(prefers-reduced-motion:reduce){
   .tile.power-rocket,.tile.power-bomb,.tile.power-rainbow,.rainbow-art{animation:none!important}
 }
+
+/* Gameplay finish pass: clearer objective completion and responsive terminal feedback. */
+.goal-chip{transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}
+.goal-chip.done{border-color:#6ce8b1;background:linear-gradient(145deg,#173e3a,#214a43);box-shadow:inset 0 0 0 1px #8cf5c333}
+.goal-chip.done .goal-count{color:#9df6c7}
+.goal-chip.done .goal-count:after{content:" ✓";font-weight:900}
+.tile{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tile.popping{animation:pop-tile-out .22s ease-in both;pointer-events:none}
+.tile.expression-winning{animation:tile-win-pulse .72s ease-in-out both}
+.modal.modal-win{border-color:#8deac0;box-shadow:0 8px 0 #276b5a,0 28px 70px #08031588}
+.modal.modal-win .modal-emoji{filter:drop-shadow(0 5px 0 #1d6c54);animation:win-bounce .55s cubic-bezier(.2,.8,.2,1) both}
+.modal.modal-loss{border-color:#ffb5bc;box-shadow:0 8px 0 #803a55,0 28px 70px #08031588}
+.modal.modal-loss .modal-emoji{filter:drop-shadow(0 4px 0 #71314a)}
+.modal-stats{gap:9px}
+.modal-stat{border-radius:13px}
+@keyframes pop-tile-out{0%{transform:scale(1);opacity:1}55%{transform:scale(1.12);opacity:.9}100%{transform:scale(.55);opacity:0}}
+@keyframes tile-win-pulse{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(-3px) scale(1.045)}}
+@keyframes win-bounce{0%{transform:scale(.72) rotate(-8deg)}65%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.goal-chip,.tile.popping,.tile.expression-winning,.modal.modal-win .modal-emoji{animation:none!important;transition:none!important}}
