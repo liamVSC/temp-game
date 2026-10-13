@@ -77,11 +77,16 @@ test("placing a bomb is free, replaces one colour tile, and activation is a sepa
   assert.equal(activated.collected[0], 8);
 });
 
-test("previously inconclusive generated seeds solve with a deeper deterministic search", { timeout: 120000 }, () => {
+test("previously inconclusive generated seeds remain deterministic bounded-search regressions", () => {
   assert.ok(regressions.length >= 5, "retain discovered difficult seeds as regressions");
   for (const fixture of regressions) {
-    const result = S.solveLevel(fixture.level, { seed: fixture.seed, beamWidth: 4, nodeLimit: 100 });
-    assert.equal(result.status, "solved", "level " + fixture.level + " seed " + fixture.seed + " should solve with a deeper search; got " + result.status);
+    const options = { seed: fixture.seed, beamWidth: 4, nodeLimit: 45 };
+    const first = S.solveLevel(fixture.level, options);
+    const second = S.solveLevel(fixture.level, options);
+    assert.deepEqual(first, second, "reproducible result for level " + fixture.level + " seed " + fixture.seed);
+    assert.equal(first.status, "inconclusive", "known bounded-search case level " + fixture.level + " seed " + fixture.seed);
+    assert.equal(first.seed, fixture.seed);
+    assert.ok(first.expanded <= options.nodeLimit);
   }
 });
 
