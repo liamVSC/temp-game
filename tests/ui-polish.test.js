@@ -49,5 +49,5 @@ test("settings and shop interactions remain wired to the existing saved game sta
   assert.match(game, /progress\.sound=\$\("setting-sound"\)\.checked/);
   assert.match(game, /progress\.vibration=\$\("setting-vibration"\)\.checked/);
   assert.match(game, /function buyShopBooster\(type\)/);
-  assert.match(game, /save\(\);updateHud\(\);renderHome\(\);renderShop\(\)/);
+  assert.match(game, /save\(\);if\(config\)updateHud\(\);renderHome\(\);renderShop\(\)/);
 });
