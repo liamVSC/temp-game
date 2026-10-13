@@ -32,6 +32,7 @@ test("booster purchases check the balance and update saved inventory exactly onc
   assert.match(game, /function buyShopBooster\(type\)/);
   assert.match(game, /const purchase=C\.purchaseBooster\(progress,type,25\)/);
   assert.match(game, /purchase\.reason==="funds"/);
+  assert.match(game, /save\(\);if\(config\)updateHud\(\);renderHome\(\);renderShop\(\)/);
   assert.match(game, /button\.disabled=\(progress\.coins\|\|0\)<25/);
   assert.match(game, /function renderShop\(\)/);
 });
