@@ -22,13 +22,7 @@ function components(board) {
   return groups;
 }
 function damageObstacles(board, indices) {
-  const cleared = new Set(indices), hits = new Set();
-  for (const at of indices) for (const next of C.neighbours(at))
-    if (!cleared.has(next) && OBSTACLES.has(board[next])) hits.add(next);
-  for (const at of hits) {
-    if (board[at] === "crate" || board[at] === "cracked-ice") board[at] = null;
-    else if (board[at] === "ice") board[at] = "cracked-ice";
-  }
+  return C.damageObstacles(board, indices);
 }
 function collectAndRemove(board, indices, collected) {
   for (const at of indices) {
