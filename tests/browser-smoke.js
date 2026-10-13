@@ -48,7 +48,16 @@ async function main() {
     await page.waitForSelector("#game-screen:not(.hidden)");
     assert.ok(await page.locator("#board .tile.power-rocket").count() >= 1, "placed booster must survive reload");
     assert.equal(await page.locator("#coin-count").innerText(), "25", "coin balance must survive reload");
-    assert.equal(await page.locator("#rocket-count").innerText(), "2", "inventory decrement must survive reload");
+    assert.equal(await page.locator("#rocket-count").innerText(), "2", "placement must consume exactly one rocket");
+    const movesBeforeActivation = Number(await page.locator("#moves-left").innerText());
+    await page.locator("#board .tile.power-rocket").first().click();
+    await page.waitForFunction(previous => Number(document.querySelector("#moves-left").textContent) === previous - 1
+      && document.querySelectorAll("#board .tile.power-rocket").length === 0, movesBeforeActivation);
+    assert.equal(await page.locator("#rocket-count").innerText(), "2", "activating a placed rocket must not consume a second booster");
+    await page.reload({ waitUntil:"networkidle" });
+    await page.waitForSelector("#game-screen:not(.hidden)");
+    assert.equal(Number(await page.locator("#moves-left").innerText()), movesBeforeActivation - 1, "rocket activation move must survive reload");
+    assert.equal(await page.locator("#rocket-count").innerText(), "2", "rocket inventory must remain stable after activation and reload");
     await context.close();
     const narrow = await browser.newContext({ viewport:{width:320,height:740}, deviceScaleFactor:2, isMobile:true, hasTouch:true, reducedMotion:"reduce" });
     const narrowPage = await narrow.newPage();
