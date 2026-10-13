@@ -30,12 +30,6 @@ jobs:
       - name: Build production site
         run: npm run build
 
-      - name: Build production site
-        run: npm run build
-
-      - name: Build production site
-        run: npm run build
-
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
