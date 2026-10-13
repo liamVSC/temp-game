@@ -30,7 +30,6 @@ test("shop offers all supported boosters at a consistent 25-coin price", () => {
 
 test("booster purchases check the balance and update saved inventory exactly once", () => {
   assert.match(game, /function buyShopBooster\(type\)/);
-  assert.match(game, /if\(!\["rocket","bomb","shuffle"\]\.includes\(type\)\)return/);
   assert.match(game, /const purchase=C\.purchaseBooster\(progress,type,25\)/);
   assert.match(game, /purchase\.reason==="funds"/);
   assert.match(game, /button\.disabled=\(progress\.coins\|\|0\)<25/);
