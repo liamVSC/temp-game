@@ -59,8 +59,59 @@ async function main() {
     assert.ok(narrowLayout.document <= narrowLayout.viewport + 1, "320px viewport must not have horizontal overflow");
     assert.ok(narrowLayout.board.left >= 0 && narrowLayout.board.right <= narrowLayout.viewport + 1, "board must fit on narrow phones");
     await narrow.close();
+    // Exercise terminal transitions through the real browser boot/restore path.
+    const baseProgress = {
+      unlocked: 1, coins: 50, levels: {}, boosters: { rocket: 2, bomb: 1, shuffle: 1 },
+      sound: true, vibration: true,
+      daily: { date: "", completed: false, streak: 0, lastCompleted: "", bestScore: 0 },
+      achievements: {}, stats: { pops: 0, wins: 0, levelsCompleted: 0, tilesCleared: 0 }
+    };
+    const settledBoard = Array(72).fill(0);
+    const winningContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const winningPage = await winningContext.newPage();
+    winningPage.on("pageerror", error => errors.push(error.message));
+    await winningPage.addInitScript(({ savedProgress, savedRun }) => {
+      localStorage.setItem("pop-party-save-v1", JSON.stringify(savedProgress));
+      localStorage.setItem("pop-party-run-v1", JSON.stringify(savedRun));
+    }, {
+      savedProgress: baseProgress,
+      savedRun: { level: 1, board: settledBoard, moves: 12, score: 300,
+        collected: { 0: 8, 3: 5 }, seed: 12345, mode: "level", dailyDate: "" }
+    });
+    await winningPage.goto("http://127.0.0.1:" + address.port + "/", { waitUntil: "networkidle" });
+    await winningPage.waitForFunction(() => !document.querySelector("#modal-backdrop").classList.contains("hidden"));
+    assert.equal(await winningPage.locator("#modal-title").innerText(), "LEVEL COMPLETE!", "restored completed objectives must trigger one win");
+    assert.equal(await winningPage.locator("#coin-count").innerText(), "63", "first-clear reward must be credited once");
+    assert.equal(await winningPage.locator("#home-level-number").innerText(), "2", "winning must unlock the next level");
+    await winningPage.reload({ waitUntil: "networkidle" });
+    await winningPage.waitForSelector("#home-screen:not(.hidden)");
+    assert.equal(await winningPage.locator("#coin-count").innerText(), "63", "reloading after a win must not duplicate the reward");
+    assert.ok(await winningPage.locator("#modal-backdrop.hidden").count() === 1, "completed run must not reopen the win modal");
+    await winningContext.close();
+
+    const losingContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const losingPage = await losingContext.newPage();
+    losingPage.on("pageerror", error => errors.push(error.message));
+    await losingPage.addInitScript(({ savedProgress, savedRun }) => {
+      localStorage.setItem("pop-party-save-v1", JSON.stringify(savedProgress));
+      localStorage.setItem("pop-party-run-v1", JSON.stringify(savedRun));
+    }, {
+      savedProgress: baseProgress,
+      savedRun: { level: 1, board: settledBoard, moves: 0, score: 120,
+        collected: { 0: 0, 3: 0 }, seed: 54321, mode: "level", dailyDate: "" }
+    });
+    await losingPage.goto("http://127.0.0.1:" + address.port + "/", { waitUntil: "networkidle" });
+    await losingPage.waitForFunction(() => !document.querySelector("#modal-backdrop").classList.contains("hidden"));
+    assert.equal(await losingPage.locator("#modal-title").innerText(), "OUT OF MOVES", "restored exhausted run must trigger loss");
+    assert.equal(await losingPage.locator("#coin-count").innerText(), "50", "loss must not grant a level reward");
+    await losingPage.reload({ waitUntil: "networkidle" });
+    await losingPage.waitForSelector("#home-screen:not(.hidden)");
+    assert.equal(await losingPage.locator("#coin-count").innerText(), "50", "reloading after a loss must not alter coins");
+    assert.ok(await losingPage.locator("#modal-backdrop.hidden").count() === 1, "finished losing run must not reopen the loss modal");
+    await losingContext.close();
+
     assert.deepEqual(errors, [], "browser pages must not throw JavaScript errors");
-    console.log("Mobile browser smoke passed at 390px and 320px: shop purchase, booster placement, reload persistence, objectives, board fit, and no page errors.");
+    console.log("Mobile browser smoke passed at 390px and 320px: shop purchase, booster placement, reload persistence, objectives, board fit, win/loss restore and reward idempotency, and no page errors.");
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));
