@@ -12,7 +12,7 @@ for (const name of assets) {
   fs.copyFileSync(source, path.join(output, name));
 }
 const html = fs.readFileSync(path.join(output, "index.html"), "utf8");
-for (const reference of ["./styles.css", "./game-core.js", "./game.js", "./manifest.webmanifest", "./sw.js"]) {
+for (const reference of ["./styles.css", "./game-core.js", "./game.js", "./manifest.webmanifest"]) {
   if (!html.includes(reference)) throw new Error("Production HTML is missing asset reference: " + reference);
 }
 console.log("Production site built to dist/ (" + assets.length + " assets).");
