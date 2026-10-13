@@ -19,6 +19,9 @@ jobs:
       - run: npm run check
       - run: npm run build
       - name: Audit all 5,000 generated levels with deterministic solver
+        env:
+          SOLVER_BEAM_WIDTH: 4
+          SOLVER_NODE_LIMIT: 15
         run: npm run audit:levels
       - name: Retain level solver report and failing seeds
         if: always()
