@@ -32,6 +32,46 @@ test("solver reports bounded-search uncertainty honestly", () => {
   assert.ok(result.movesUsed >= 0 && result.movesUsed <= C.levelConfig(20).moves);
 });
 
+test("a four-block group creates a rocket, counts only three cleared blocks and spends one move", () => {
+  const config = C.levelConfig(1);
+  const state = { board: Array(72).fill(null), collected: Array(C.COLOURS).fill(0), moves: config.moves,
+    boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
+  state.board[0] = 0; state.board[1] = 0; state.board[2] = 0; state.board[3] = 0;
+  const next = S.applyAction(state, { type: "group", group: [0, 1, 2, 3] }, 1, config, 997);
+  assert.equal(next.moves, config.moves - 1);
+  assert.equal(next.collected[0], 3);
+  assert.equal(next.board.filter(tile => tile === "rocket").length, 1);
+  assert.ok(next.board.every(tile => tile !== null), "gravity and refill settle the board without auto-clearing");
+});
+
+test("rocket activation clears one row, damages adjacent obstacles and does not chain", () => {
+  const config = C.levelConfig(8);
+  const board = Array(72).fill(null);
+  board[0] = "rocket";
+  for (let x = 1; x < C.COLS; x++) board[x] = 0;
+  board[8] = "crate"; board[9] = "ice"; board[10] = "cracked-ice";
+  const state = { board, collected: Array(C.COLOURS).fill(0), moves: config.moves,
+    boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
+  const next = S.applyAction(state, { type: "power", index: 0 }, 8, config, 8008);
+  assert.equal(next.moves, config.moves - 1);
+  assert.equal(next.collected[0], 7);
+  assert.ok(!next.board.includes("crate"));
+  assert.ok(next.board.includes("cracked-ice"));
+  assert.ok(next.board.every(tile => tile !== null));
+});
+
+test("placing and activating a bomb consumes inventory, not the replaced colour objective", () => {
+  const config = C.levelConfig(1);
+  const board = Array(72).fill(0);
+  const state = { board, collected: Array(C.COLOURS).fill(0), moves: config.moves,
+    boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
+  const next = S.applyAction(state, { type: "booster", booster: "bomb", index: 4 }, 1, config, 997);
+  assert.equal(next.moves, config.moves - 1);
+  assert.equal(next.boosters.bomb, 0);
+  assert.equal(next.collected[0], 8);
+  assert.equal(state.collected[0], 0, "the input state remains immutable");
+});
+
 test("solver models power-up creation thresholds and available booster inventory", () => {
   const source = require("node:fs").readFileSync(require.resolve("../scripts/solver.js"), "utf8");
   assert.match(source, /group\.length >= 9 \? "rainbow" : group\.length >= 5 \? "bomb" : "rocket"/);
