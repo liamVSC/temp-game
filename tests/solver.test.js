@@ -65,7 +65,7 @@ test("placing and activating a bomb consumes inventory, not the replaced colour 
   const board = Array(72).fill(0);
   const state = { board, collected: Array(C.COLOURS).fill(0), moves: config.moves,
     boosters: { rocket: 2, bomb: 1, shuffle: 1 }, coins: 50, rngStep: 1, shuffles: 0 };
-  const next = S.applyAction(state, { type: "booster", booster: "bomb", index: 4 }, 1, config, 997);
+  const next = S.applyAction(state, { type: "booster", booster: "bomb", index: 36 }, 1, config, 997);
   assert.equal(next.moves, config.moves - 1);
   assert.equal(next.boosters.bomb, 0);
   assert.equal(next.collected[0], 8);
