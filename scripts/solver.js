@@ -11,18 +11,13 @@ function cloneState(state) {
     boosterStep: state.boosterStep || 0, shuffles: state.shuffles || 0 };
 }
 function components(board) {
-  const seen = new Uint8Array(board.length), groups = [];
+  // Use the production core's canonical group detection so solver and gameplay
+  // cannot silently diverge on adjacency, tile types, or colour validation.
+  const groups = [];
   for (let start = 0; start < board.length; start++) {
-    const colour = board[start];
-    if (seen[start] || !Number.isInteger(colour) || colour < 0 || colour >= C.COLOURS) continue;
-    const stack = [start], group = [];
-    seen[start] = 1;
-    while (stack.length) {
-      const at = stack.pop();
-      group.push(at);
-      for (const next of C.neighbours(at)) if (!seen[next] && board[next] === colour) { seen[next] = 1; stack.push(next); }
-    }
-    if (group.length >= 2) groups.push(group.sort((a, b) => a - b));
+    if (!Number.isInteger(board[start]) || board[start] < 0 || board[start] >= C.COLOURS) continue;
+    const group = C.groupAt(board, start);
+    if (group.length >= 2 && group[0] === start) groups.push(group);
   }
   return groups;
 }
