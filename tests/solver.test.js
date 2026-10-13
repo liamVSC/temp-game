@@ -103,7 +103,8 @@ test("solver models power-up creation thresholds and available booster inventory
   const source = require("node:fs").readFileSync(require.resolve("../scripts/solver.js"), "utf8");
   assert.match(source, /group\.length >= 9 \? "rainbow" : group\.length >= 5 \? "bomb" : "rocket"/);
   assert.match(source, /DEFAULT_INVENTORY = Object\.freeze\(\{ rocket: 2, bomb: 1, shuffle: 1 \}\)/);
-  assert.match(source, /function usePower/);\n  assert.match(source, /Placement is a free setup action/);
+  assert.match(source, /function usePower/);
+  assert.match(source, /Placement is a free setup action/);
   assert.match(source, /function settle/);
 });
 
