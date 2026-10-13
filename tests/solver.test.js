@@ -76,8 +76,13 @@ test("booster placement is deterministic, free, and activation is a separate mov
   assert.equal(state.board.filter(tile => tile === 0).length, 72, "the input state remains immutable");
   const index = placed.board.indexOf("bomb");
   const activated = S.applyAction(placed, { type: "power", index }, 1, config, 997);
+  const cx = index % C.COLS, cy = Math.floor(index / C.COLS);
+  let expectedCollected = 0;
+  for (let y = Math.max(0, cy - 1); y <= Math.min(C.ROWS - 1, cy + 1); y++)
+    for (let x = Math.max(0, cx - 1); x <= Math.min(C.COLS - 1, cx + 1); x++)
+      if (y * C.COLS + x !== index) expectedCollected++;
   assert.equal(activated.moves, config.moves - 1);
-  assert.equal(activated.collected[0], 8);
+  assert.equal(activated.collected[0], expectedCollected);
 });
 
 test("previously inconclusive generated seeds remain deterministic bounded-search regressions", () => {
