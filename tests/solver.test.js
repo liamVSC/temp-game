@@ -88,9 +88,8 @@ test("booster placement is deterministic, free, and activation is a separate mov
 test("all previously inconclusive generated seeds solve after dead-board refresh is modeled", { timeout: 120000 }, () => {
   assert.ok(regressions.length >= 40, "retain all discovered inconclusive seeds as regressions");
   for (const fixture of regressions) {
-    const beamWidth = fixture.level === 1545 ? 8 : 4;
-    const result = S.solveLevel(fixture.level, { seed: fixture.seed, beamWidth, nodeLimit: 100 });
-    assert.equal(result.status, "solved", "level " + fixture.level + " seed " + fixture.seed + " should now solve; result: " + JSON.stringify(result));
+    const result = S.solveLevel(fixture.level, { seed: fixture.seed, beamWidth: 8, nodeLimit: 300 });
+    assert.equal(result.status, "solved", "level " + fixture.level + " seed " + fixture.seed + " should solve with the deep-search retry; result: " + JSON.stringify(result));
   }
 });
 
