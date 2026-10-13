@@ -130,13 +130,19 @@ function bestBoosterCandidates(state, config) {
         if (targetColours.has(tile)) value += 2;
         else if (OBSTACLES.has(tile)) value += tile === "ice" ? 1 : .5;
       }
-      if (value > bestValue) { bestValue = value; best = row * C.COLS + Math.floor(C.COLS / 2); }
+      if (value > bestValue) {
+        const candidates = Array.from({ length: C.COLS }, (_, x) => row * C.COLS + x)
+          .filter(at => Number.isInteger(board[at]) && board[at] >= 0 && board[at] < C.COLOURS)
+          .sort((a, b) => Math.abs((a % C.COLS) - (C.COLS / 2)) - Math.abs((b % C.COLS) - (C.COLS / 2)));
+        if (candidates.length) { bestValue = value; best = candidates[0]; }
+      }
     }
     if (best !== null) choices.push({ type: "rocket", index: best });
   }
   if (state.boosters.bomb > 0 || state.coins >= 25) {
     let best = null, bestValue = -Infinity;
     for (let at = 0; at < board.length; at++) {
+      if (!Number.isInteger(board[at]) || board[at] < 0 || board[at] >= C.COLOURS) continue;
       const cx = at % C.COLS, cy = Math.floor(at / C.COLS);
       let value = 0;
       for (let y = Math.max(0, cy - 1); y <= Math.min(C.ROWS - 1, cy + 1); y++)
