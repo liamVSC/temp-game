@@ -1,0 +1,52 @@
+[
+  {
+    "level": 45,
+    "seed": 44865,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 52,
+    "seed": 51844,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 61,
+    "seed": 60817,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 67,
+    "seed": 66799,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 70,
+    "seed": 69790,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 72,
+    "seed": 71784,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 74,
+    "seed": 73778,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 81,
+    "seed": 80757,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 94,
+    "seed": 93718,
+    "reason": "inconclusive at 45-node audit budget"
+  },
+  {
+    "level": 103,
+    "seed": 102691,
+    "reason": "inconclusive at 45-node audit budget"
+  }
+]

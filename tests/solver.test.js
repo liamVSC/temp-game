@@ -3,6 +3,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const C = require("../game-core.js");
 const S = require("../scripts/solver.js");
+const regressions = require("./fixtures/solver-regressions.json");
 
 test("solver component detection matches orthogonal same-colour groups", () => {
   const board = Array(72).fill(null);
@@ -70,6 +71,14 @@ test("placing and activating a bomb consumes inventory, not the replaced colour 
   assert.equal(next.boosters.bomb, 0);
   assert.equal(next.collected[0], 8);
   assert.equal(state.collected[0], 0, "the input state remains immutable");
+});
+
+test("previously inconclusive generated seeds solve with a deeper deterministic search", { timeout: 120000 }, () => {
+  assert.ok(regressions.length >= 5, "retain discovered difficult seeds as regressions");
+  for (const fixture of regressions) {
+    const result = S.solveLevel(fixture.level, { seed: fixture.seed, beamWidth: 4, nodeLimit: 100 });
+    assert.equal(result.status, "solved", "level " + fixture.level + " seed " + fixture.seed + " should solve with a deeper search; got " + result.status);
+  }
 });
 
 test("solver models power-up creation thresholds and available booster inventory", () => {
